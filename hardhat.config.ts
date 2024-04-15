@@ -101,6 +101,15 @@ const config: HardhatUserConfig = {
         path: "m/44'/60'/0'/0",
       },
     },
+    morphTest: {
+      url: 'https://rpc-testnet.morphl2.io' || '',
+      gasPrice: 30000000000,
+      accounts: {
+        count: 12,
+        mnemonic,
+        path: "m/44'/60'/0'/0",
+      },
+    },
     hardhat: {
       // forking: {
       //   url: process.env.NODE_URI !== undefined ? process.env.NODE_URI : '',
@@ -143,6 +152,7 @@ const config: HardhatUserConfig = {
       // base
       base: process.env.BASESCAN_API_KEY || '',
       baseGoerli: process.env.BASESCAN_API_KEY || '',
+      morphTest: "abc",
     },
     customChains: [
       {
@@ -192,7 +202,15 @@ const config: HardhatUserConfig = {
           apiURL: "https://api.snowtrace.io/api",
           browserURL: "https://snowtrace.io/",
         },
-      }
+      },
+      {
+        network: "morphTest",
+        chainId: 2710,
+        urls: {
+          apiURL: "https://explorer-api-testnet.morphl2.io/api",
+          browserURL: "https://explorer-testnet.morphl2.io",
+        },
+      },
     ]
   }
 };

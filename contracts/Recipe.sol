@@ -48,11 +48,19 @@ contract Recipe is ERC1155URIStorage, ERC2981 {
     constructor(
         string memory _name,
         string memory _symbol,
-        address _owner
+        address _owner,
+        uint256[] memory _maxSupply,
+        uint256[] memory _pricePerCopy,
+        string[] memory _uri
     ) ERC1155("") {
+        require(_maxSupply.length == _pricePerCopy.length && _maxSupply.length == _uri.length, "RecipeFactory: Invalid input");
         name = _name;
         symbol = _symbol;
         owner = _owner;
+
+        for(uint256 i = 0; i < _maxSupply.length; i++) {
+           _createNewTokenType(_maxSupply[i], _pricePerCopy[i], _uri[i]);
+        }
 
         _setDefaultRoyalty(address(this), 500); // 5%
     }
@@ -62,11 +70,7 @@ contract Recipe is ERC1155URIStorage, ERC2981 {
         uint256 _pricePerCopy,
         string memory _uri
     ) public onlyOwner {
-        tokenTypes[tokenTypesAmount] = TokenType(_maxSupply, 0, _pricePerCopy);
-        _setURI(tokenTypesAmount, _uri);
-        tokenTypesAmount++;
-
-        emit TokenTypeCreated(tokenTypesAmount - 1, _maxSupply, _pricePerCopy, _uri);
+        _createNewTokenType(_maxSupply, _pricePerCopy, _uri);
     }
 
     function mint(uint256 _tokenType) public payable {
@@ -116,5 +120,17 @@ contract Recipe is ERC1155URIStorage, ERC2981 {
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
+    }
+
+    function _createNewTokenType(
+        uint256 _maxSupply,
+        uint256 _pricePerCopy,
+        string memory _uri
+    ) internal {
+        tokenTypes[tokenTypesAmount] = TokenType(_maxSupply, 0, _pricePerCopy);
+        _setURI(tokenTypesAmount, _uri);
+        tokenTypesAmount++;
+
+        emit TokenTypeCreated(tokenTypesAmount - 1, _maxSupply, _pricePerCopy, _uri);
     }
 }

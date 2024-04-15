@@ -22,9 +22,22 @@ import "./Recipe.sol";
 contract RecipeFactory is Ownable {
     Recipe[] public RecipeArray;
 
-    function CreateNewRecipe(string memory _name, string memory _symbol) public {
-        Recipe recipe = new Recipe(_name, _symbol, msg.sender);
+    event RecipeCreated(address indexed recipe, string name, string symbol, address owner);
+
+    function createNewRecipe(
+        string memory _name,
+        string memory _symbol,
+        uint256[] memory _maxSupply,
+        uint256[] memory _pricePerCopy,
+        string[] memory _uri
+    ) public returns(address) {
+        require(_maxSupply.length == _pricePerCopy.length && _maxSupply.length == _uri.length, "RecipeFactory: Invalid input");
+        Recipe recipe = new Recipe(_name, _symbol, msg.sender, _maxSupply, _pricePerCopy, _uri);
         RecipeArray.push(recipe);
+
+        emit RecipeCreated(address(recipe), _name, _symbol, msg.sender);
+
+        return address(recipe);
     }
 
     receive() external payable {
